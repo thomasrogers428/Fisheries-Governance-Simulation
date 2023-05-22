@@ -1,6 +1,7 @@
 from mesa import Model
 from mesa.space import MultiGrid
 from mesa.time import RandomActivation
+from mesa.datacollection import DataCollector
 
 from fish import Fish
 from fishery import Fishery
@@ -9,17 +10,24 @@ import random
 
 class Model(Model):
     def __init__(self, width, height, num_fish, num_fisheries, num_ports):
-        # Initialize your model here
         super().__init__()
 
         self.num_fish= num_fish
         self.num_fisheries = num_fisheries
         self.num_ports = num_ports
+
+        self.fish_born = 0
+
         self.grid = MultiGrid(width, height, torus=True)
         self.schedule = RandomActivation(self)
         self.fish = []
         self.fisheries = []
         self.ports = []
+
+        self.datacollector = DataCollector(
+            model_reporters={"TotalFish": self.compute_total_fish,
+                             "TotalFisheries": self.compute_total_fisheries}
+        )
 
         self.step_count = 0
 
@@ -43,10 +51,10 @@ class Model(Model):
             self.fish.append(fish)
         
         # Create fisherman agents
-        for i in range(self.num_agents):
+        for i in range(self.num_fisheries):
             port_pos = random.choice(self.ports)
 
-            fishery = Fishery(i, port_pos, self)
+            fishery = Fishery(i + num_fish, port_pos, self)
 
             self.schedule.add(fishery)
             self.grid.place_agent(fishery, (x,y))
@@ -73,13 +81,13 @@ class Model(Model):
                 x = fish.x
                 y = fish.y
 
-                baby_fish = Fish(self.num_fish, (x,y), self)
+                self.fish_born += 1
+
+                baby_fish = Fish(self.num_fish + self.num_fisheries + self.fish_born, (x,y), self)
 
                 self.schedule.add(baby_fish)
                 self.grid.place_agent(baby_fish, (x,y))
                 self.fish.append(baby_fish)
-
-                self.num_fish += 1
 
     def handle_deaths(self):
         for fish in self.fish:
@@ -87,6 +95,12 @@ class Model(Model):
                 self.schedule.remove(fish)
                 self.grid.remove_agent(fish)
                 self.fish.remove(fish)
+
+    def compute_total_fish(model):
+        return len(model.fish)
+
+    def compute_total_fisheries(model):
+        return len(model.fisheries)
 
 
 

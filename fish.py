@@ -14,6 +14,7 @@ class Fish(Agent):
         else:
             self.age = self.init_age()
             self.size = self.calculate_size()
+        
         self.reproduction = self.calculate_reproduction()
 
         self.caught = False
@@ -28,7 +29,7 @@ class Fish(Agent):
 
     def calculate_size(self):
         # Randomize the size of the fish based on its age with a gaussian distribution
-        return random.gauss(self.age, 1)
+        return random.lognormvariate(self.age, 1)
     
     def calculate_reproduction(self):
         reproducing = random.randint(0, 1)
@@ -52,7 +53,9 @@ class Fish(Agent):
         horizontal = random.randint(0,1)
         vertical = random.randint(-1,1)
 
-        self.x += horizontal
-        self.y += vertical
+        self.x = max(0, min(self.x + horizontal, self.model.grid.width - 1))
+        self.y = max(0, min(self.y + vertical, self.model.grid.height - 1))
     
+    def portrayal(self):
+        return {"Shape": "circle", "r": 0.5, "Filled": "true", "Color": "blue", "Layer": 0}
         
