@@ -1,6 +1,7 @@
 from mesa import Agent
 
 import random
+import math
 
 class Fish(Agent):
     def __init__(self, unique_id, pos, model, born=True):
@@ -20,12 +21,14 @@ class Fish(Agent):
         self.caught = False
 
     def step(self):
-        self.update_reproduction()
-
-        self.move()
-
-    def get_caught(self):
-        self.caught = True
+        if self.caught:
+            self.model.grid.remove_agent(self)
+            self.model.schedule.remove(self)
+            self.model.fish.remove(self)
+        else:
+            self.age += 1
+            self.update_reproduction()
+            self.move()
 
     def calculate_size(self):
         # Randomize the size of the fish based on its age with a gaussian distribution
@@ -50,12 +53,24 @@ class Fish(Agent):
         return random.randint(0, 7*12)
     
     def move(self):
-        horizontal = random.randint(0,1)
+        horizontal = random.randint(-1,1)
         vertical = random.randint(-1,1)
 
         self.x = max(0, min(self.x + horizontal, self.model.grid.width - 1))
         self.y = max(0, min(self.y + vertical, self.model.grid.height - 1))
     
-    def portrayal(self):
-        return {"Shape": "circle", "r": 0.5, "Filled": "true", "Color": "blue", "Layer": 0}
+    def portrayal(agent):
+        portrayal = {"Shape": "circle",
+                    "Filled": "true"}
+
+        # Count the number of fish in the cell
+        num_fish_in_cell = len([other_agent for other_agent in agent.model.grid.get_cell_list_contents([agent.pos]) if type(other_agent) is Fish])
+
+        # Scale the size of the portrayal based on the number of fish
+        portrayal["r"] = min(1, 0.1 * math.log(num_fish_in_cell + 1))
+
+        portrayal["Color"] = "blue"
+        portrayal["Layer"] = 1
+
+        return portrayal
         

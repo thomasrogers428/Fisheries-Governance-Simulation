@@ -52,12 +52,13 @@ class Model(Model):
         
         # Create fisherman agents
         for i in range(self.num_fisheries):
+            
             port_pos = random.choice(self.ports)
 
             fishery = Fishery(i + num_fish, port_pos, self)
 
             self.schedule.add(fishery)
-            self.grid.place_agent(fishery, (x,y))
+            self.grid.place_agent(fishery, (port_pos[0], port_pos[1]))
             self.fisheries.append(fishery)
     
     def step(self):

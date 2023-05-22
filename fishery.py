@@ -11,7 +11,7 @@ class Fishery(Agent):
         self.x = port_pos[0]
         self.y = port_pos[1]
 
-        self.capacity = 1000
+        self.capacity = 100
         self.profit = 0
 
         self.fish_caught = 0
@@ -32,15 +32,21 @@ class Fishery(Agent):
             catch_prob = random.random()
 
             # 20% chance of catching a fish
-            if catch_prob > 0.8:
+            if catch_prob > 0.0:
                 self.fish_caught += 1
                 self.fish_bag.append(fish)
-                fish.get_caught()
+                fish.caught = True
         
     def move(self):
         potential_locations = self.locate_fishing_spot()
 
-        self.x, self.y = self.choose_location(potential_locations)
+        if potential_locations is not None:
+            new_pos = self.choose_location(potential_locations)
+
+            if new_pos is not None:
+                self.x, self.y = new_pos
+                self.model.grid.move_agent(self, (self.x, self.y))
+
 
     def locate_fishing_spot(self):
         fish_counts = {}
@@ -68,6 +74,8 @@ class Fishery(Agent):
         dest_x, dest_y = None, None
         curr_profit = -math.inf
 
+        random.shuffle(locations)
+
         for location in locations: 
             x, y = location[0][0], location[0][1]
             fish_count = location[1]
@@ -77,7 +85,10 @@ class Fishery(Agent):
             if profit >= curr_profit:
                 dest_x, dest_y = x, y
                 curr_profit = profit
-        
+
+        if dest_x is None or dest_y is None:
+            return None
+
         return dest_x, dest_y
 
 
@@ -97,4 +108,4 @@ class Fishery(Agent):
         self.fish_bag = []
 
     def portrayal(self):
-        return {"Shape": "rect", "w": 1, "h": 1,  "Filled": "true", "Color": "red", "Layer": 1}
+        return {"Shape": "rect", "w": .5, "h": .5,  "Filled": "false", "Color": "red", "Layer": 0}
