@@ -46,9 +46,8 @@ class Fish(Agent):
             return random.randint(1,7)
         
     def update_reproduction(self):
-        if self.reproduction == 0:
-            if self.age >= 1.5*12:
-                self.reproduction = random.randint(1,7)
+        if self.age >= 1.5*12:
+            self.reproduction = random.gauss(6,2)
         
     def init_age(self):
         return random.randint(0, 7*12)

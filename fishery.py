@@ -19,6 +19,9 @@ class Fishery(Agent):
         
         self.can_fish = True
 
+        self.illegal_dict = {}
+
+
     def step(self):
         for fish in self.model.fish:
             self.catch_fish(fish)
@@ -107,6 +110,12 @@ class Fishery(Agent):
             self.profit += fish.size
 
         self.fish_bag = []
+
+    def init_illegal(self):
+        illegal_activities = ["marine_protected", "size_limit", "fishing_gear"]
+
+        for activity in illegal_activities:
+            self.illegal_dict[activity] = random.random()
 
     def portrayal(self):
         return {"Shape": "rect", "w": .5, "h": .5,  "Filled": "false", "Color": "red", "Layer": 1}
