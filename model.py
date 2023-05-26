@@ -5,17 +5,21 @@ from mesa.datacollection import DataCollector
 
 from fish import Fish
 from fishery import Fishery
+from protected_area import ProtectedArea
 
 import random
 
 class Model(Model):
-    def __init__(self, width, height, num_fish, num_fisheries, num_ports):
+    def __init__(self, width, height, num_fish, num_fisheries, num_ports, p_protected, size_limit):
         super().__init__()
 
         self.num_fish= num_fish
         self.num_fisheries = num_fisheries
         self.num_ports = num_ports
 
+        self.protected_areas = set()
+        self.size_limit = size_limit
+        
         self.fish_born = 0
 
         self.grid = MultiGrid(width, height, torus=True)
@@ -23,11 +27,6 @@ class Model(Model):
         self.fish = []
         self.fisheries = []
         self.ports = []
-
-        self.datacollector = DataCollector(
-            model_reporters={"TotalFish": self.compute_total_fish,
-                             "TotalFisheries": self.compute_total_fisheries}
-        )
 
         self.step_count = 0
 
@@ -60,9 +59,24 @@ class Model(Model):
             self.schedule.add(fishery)
             self.grid.place_agent(fishery, (port_pos[0], port_pos[1]))
             self.fisheries.append(fishery)
+
+        # Add protected areas
+        for cell in self.grid.coord_iter():
+            x, y = cell[1], cell[2]
+            if random.random() < p_protected:
+                self.protected_areas.add((x, y))
+
+                protected_area = ProtectedArea((x, y),  (x, y), self)
+                self.grid.place_agent(protected_area, (x, y))
+
+        self.datacollector = DataCollector(
+            model_reporters={"Total Fish": self.compute_total_fish,
+                             "Total Fisheries": self.compute_total_fisheries}
+        )
     
     def step(self):
         self.schedule.step()
+        self.step_count += 1
 
         self.handle_deaths()
         if self.step_count % 12 == 0:
@@ -75,6 +89,9 @@ class Model(Model):
         # Update state of fishery agents
         for fishery in self.fisheries:
             fishery.step()
+
+        print(len(self.fish), len(self.fisheries))
+        self.datacollector.collect(self)
 
     def handle_births(self):
         for fish in self.fish:
@@ -97,13 +114,11 @@ class Model(Model):
                 self.grid.remove_agent(fish)
                 self.fish.remove(fish)
 
-    def compute_total_fish(model):
-        return len(model.fish)
+    def compute_total_fish(self):
+        return len(self.fish)
 
-    def compute_total_fisheries(model):
-        return len(model.fisheries)
-
-
-
-
-                
+    def compute_total_fisheries(self):
+        return len(self.fisheries)
+    
+    def is_protected(self, x, y):
+        return (x, y) in self.protected_areas

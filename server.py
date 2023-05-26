@@ -12,13 +12,14 @@ def agent_portrayal(agent):
 grid = CanvasGrid(agent_portrayal, 10, 10, 500, 500)  # assuming 10x10 grid and each cell is 500x500 pixels
 
 # Set up the chart
-chart = ChartModule([{"Label": "Fish", "Color": "Blue"}])
+chart_total_fish = ChartModule([{"Label": "Total Fish", "Color": "blue"}])
+chart_total_fisheries = ChartModule([{"Label": "Total Fisheries", "Color": "green"}])
 
 # Create the server
 server = ModularServer(Model,
-                       [grid, chart],
+                       [grid, chart_total_fish, chart_total_fisheries],
                        "Fisheries Model",
-                       {"width": 10, "height": 10, "num_fish": 100, "num_fisheries": 10, "num_ports": 5})
+                       {"width": 10, "height": 10, "num_fish": 100, "num_fisheries": 10, "num_ports": 5, "p_protected": 0.1, "size_limit": 0})
 
 server.port = 8521  # Set the port for the visualization server
 server.launch()

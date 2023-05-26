@@ -28,11 +28,11 @@ class Fishery(Agent):
         self.move()
 
     def catch_fish(self, fish):
-        if (fish.x == self.x and fish.y == self.y):
+        if (fish.x == self.x and fish.y == self.y) and not self.model.is_protected(self.x, self.y):
             catch_prob = random.random()
 
-            # 20% chance of catching a fish
-            if catch_prob > 0.0:
+            # 50% chance of catching a fish
+            if catch_prob > 0.5 and fish.size >= self.model.size_limit:
                 self.fish_caught += 1
                 self.fish_bag.append(fish)
                 fish.caught = True
@@ -52,13 +52,14 @@ class Fishery(Agent):
         fish_counts = {}
 
         for cell in self.model.grid.coord_iter():
-            x, y = cell[1], cell[2]
-            cell_content = cell[0]
+            if not self.model.is_protected(cell[1], cell[2]):
+                x, y = cell[1], cell[2]
+                cell_content = cell[0]
 
-            fish_in_cell = [obj for obj in cell_content if isinstance(obj, Fish) and not obj.caught]
+                fish_in_cell = [obj for obj in cell_content if isinstance(obj, Fish) and not obj.caught and obj.size >= self.model.size_limit]
 
-            if fish_in_cell:
-                fish_counts[(x, y)] = len(fish_in_cell)
+                if fish_in_cell:
+                    fish_counts[(x, y)] = len(fish_in_cell)
 
         
         if not fish_counts:
@@ -96,7 +97,7 @@ class Fishery(Agent):
         
         distance = (x - self.x)**2 + (y - self.y)**2
 
-        profit = fish_count*10 - distance%30
+        profit = fish_count*10 - distance*30
 
         return profit
     
@@ -108,4 +109,4 @@ class Fishery(Agent):
         self.fish_bag = []
 
     def portrayal(self):
-        return {"Shape": "rect", "w": .5, "h": .5,  "Filled": "false", "Color": "red", "Layer": 0}
+        return {"Shape": "rect", "w": .5, "h": .5,  "Filled": "false", "Color": "red", "Layer": 1}

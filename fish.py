@@ -70,7 +70,7 @@ class Fish(Agent):
         portrayal["r"] = min(1, 0.1 * math.log(num_fish_in_cell + 1))
 
         portrayal["Color"] = "blue"
-        portrayal["Layer"] = 1
+        portrayal["Layer"] = 2
 
         return portrayal
         
