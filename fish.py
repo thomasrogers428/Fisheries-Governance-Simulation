@@ -27,6 +27,7 @@ class Fish(Agent):
             self.model.fish.remove(self)
         else:
             self.age += 1
+            self.size = self.calculate_size()
             self.update_reproduction()
             self.move()
 
