@@ -11,7 +11,7 @@ class Fish(Agent):
 
         if born:
             self.age = 0
-            self.size = 1
+            self.size = random.gauss(1, .25)
         else:
             self.age = self.init_age()
             self.size = self.calculate_size()
@@ -27,7 +27,7 @@ class Fish(Agent):
             self.model.fish.remove(self)
         else:
             self.age += 1
-            self.size = self.calculate_size()
+            self.size += random.gauss(1, .25)
             self.update_reproduction()
             self.move()
 
