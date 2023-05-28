@@ -16,7 +16,9 @@ class Fish(Agent):
             self.age = self.init_age()
             self.size = self.calculate_size()
         
+        self.reproducing = random.randint(0, 1)
         self.reproduction = self.calculate_reproduction()
+        
 
         self.caught = False
 
@@ -36,9 +38,8 @@ class Fish(Agent):
         return random.lognormvariate(self.age, 1)
     
     def calculate_reproduction(self):
-        reproducing = random.randint(0, 1)
 
-        if not reproducing:
+        if not self.reproducing:
             return None
         elif self.age <= 1.5*12: 
             return 0
@@ -46,7 +47,7 @@ class Fish(Agent):
             return random.randint(1,7)
         
     def update_reproduction(self):
-        if self.age >= 1.5*12:
+        if self.age >= 1.5*12 and self.reproduction:
             self.reproduction = random.gauss(6,2)
         
     def init_age(self):
