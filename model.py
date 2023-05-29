@@ -110,9 +110,11 @@ class Model(Model):
     def handle_deaths(self):
         for fish in self.fish:
             if fish.age >= 12*7:
-                self.schedule.remove(fish)
-                self.grid.remove_agent(fish)
-                self.fish.remove(fish)
+                die = random.randint(0,10)
+                if die == 0:
+                    self.schedule.remove(fish)
+                    self.grid.remove_agent(fish)
+                    self.fish.remove(fish)
 
     def compute_total_fish(self):
         return len(self.fish)

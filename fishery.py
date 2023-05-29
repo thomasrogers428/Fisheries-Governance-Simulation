@@ -70,7 +70,7 @@ class Fishery(Agent):
 
         sorted_locations = sorted(fish_counts.items(), key=lambda item: item[1], reverse=True)
 
-        top_locations = sorted_locations[:3]
+        top_locations = sorted_locations[:5]
 
         return top_locations
     
@@ -80,15 +80,17 @@ class Fishery(Agent):
 
         random.shuffle(locations)
 
-        for location in locations: 
-            x, y = location[0][0], location[0][1]
-            fish_count = location[1]
+        # for location in locations: 
+        #     x, y = location[0][0], location[0][1]
+        #     fish_count = location[1]
 
-            profit = self.estimate_profit(x, y, fish_count)
+        #     profit = self.estimate_profit(x, y, fish_count)
 
-            if profit >= curr_profit:
-                dest_x, dest_y = x, y
-                curr_profit = profit
+        #     if profit >= curr_profit:
+        #         dest_x, dest_y = x, y
+        #         curr_profit = profit
+        
+        dest_x, dest_y = locations[0][0][0], locations[0][0][1]
 
         if dest_x is None or dest_y is None:
             return None

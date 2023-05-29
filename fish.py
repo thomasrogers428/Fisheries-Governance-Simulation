@@ -29,7 +29,7 @@ class Fish(Agent):
             self.model.fish.remove(self)
         else:
             self.age += 1
-            self.size += random.gauss(1, .25)
+            self.size += 2 / self.size
             self.update_reproduction()
             self.move()
 
@@ -47,19 +47,23 @@ class Fish(Agent):
             return random.randint(1,7)
         
     def update_reproduction(self):
-        if self.age >= 1.5*12 and self.reproduction:
-            self.reproduction = random.gauss(6,2)
+        if not self.reproducing:
+            return None
+        if self.age >= 1.5*12 and self.reproducing:
+            self.reproduction = random.randint(1,7)
         
     def init_age(self):
         return random.randint(0, 7*12)
     
     def move(self):
-        horizontal = random.randint(-1,1)
-        vertical = random.randint(-1,1)
+        move = random.randint(0,10)
+        if move <= 0:
+            horizontal = random.randint(-1,1)
+            vertical = random.randint(-1,1)
 
-        self.x = max(0, min(self.x + horizontal, self.model.grid.width - 1))
-        self.y = max(0, min(self.y + vertical, self.model.grid.height - 1))
-    
+            self.x = max(0, min(self.x + horizontal, self.model.grid.width - 1))
+            self.y = max(0, min(self.y + vertical, self.model.grid.height - 1))
+        
     def portrayal(agent):
         portrayal = {"Shape": "circle",
                     "Filled": "true"}
