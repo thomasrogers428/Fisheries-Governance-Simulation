@@ -19,6 +19,7 @@ class Model(Model):
 
         self.protected_areas = set()
         self.size_limit = size_limit
+        self.average_profit = 0
         
         self.fish_born = 0
 
@@ -71,7 +72,7 @@ class Model(Model):
 
         self.datacollector = DataCollector(
             model_reporters={"Total Fish": self.compute_total_fish,
-                             "Total Fisheries": self.compute_total_fisheries}
+                             "Average Profit": self.compute_average_profit}
         )
     
     def step(self):
@@ -89,9 +90,10 @@ class Model(Model):
         # Update state of fishery agents
         for fishery in self.fisheries:
             fishery.step()
-
-        print(len(self.fish), len(self.fisheries))
         self.datacollector.collect(self)
+
+        self.average_profit = sum([fishery.profit / self.step_count for fishery in self.fisheries])/len(self.fisheries)
+            
 
     def handle_births(self):
         for fish in self.fish:
@@ -119,8 +121,8 @@ class Model(Model):
     def compute_total_fish(self):
         return len(self.fish)
 
-    def compute_total_fisheries(self):
-        return len(self.fisheries)
+    def compute_average_profit(self):
+        return self.average_profit
     
     def is_protected(self, x, y):
         return (x, y) in self.protected_areas

@@ -11,7 +11,7 @@ class Fish(Agent):
 
         if born:
             self.age = 0
-            self.size = random.gauss(1, .25)
+            self.size = 1
         else:
             self.age = self.init_age()
             self.size = self.calculate_size()
@@ -35,7 +35,7 @@ class Fish(Agent):
 
     def calculate_size(self):
         # Randomize the size of the fish based on its age with a gaussian distribution
-        return random.lognormvariate(self.age, 1)
+        return self.age/12 + 1
     
     def calculate_reproduction(self):
 

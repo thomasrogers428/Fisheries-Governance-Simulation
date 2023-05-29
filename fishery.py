@@ -13,7 +13,6 @@ class Fishery(Agent):
 
         self.capacity = 100
         self.profit = 0
-
         self.fish_caught = 0
         self.fish_bag = []
         
@@ -35,7 +34,7 @@ class Fishery(Agent):
             catch_prob = random.random()
 
             # 50% chance of catching a fish
-            if catch_prob > 0.5 and fish.size >= self.model.size_limit:
+            if catch_prob > 0.1 and fish.size >= self.model.size_limit:
                 self.fish_caught += 1
                 self.fish_bag.append(fish)
                 fish.caught = True
@@ -70,7 +69,7 @@ class Fishery(Agent):
 
         sorted_locations = sorted(fish_counts.items(), key=lambda item: item[1], reverse=True)
 
-        top_locations = sorted_locations[:5]
+        top_locations = sorted_locations[:10]
 
         return top_locations
     
@@ -109,7 +108,7 @@ class Fishery(Agent):
     def calculate_profit(self):
 
         for fish in self.fish_bag:
-            self.profit += fish.size
+            self.profit += fish.size * 7.5
 
         self.fish_bag = []
 
